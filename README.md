@@ -10,7 +10,7 @@
   <img src="https://hiraku.ai/content/images/2025/04/hiraku-react-native-emoji-picker.png" alt="React Native Emoji Picker - Hiraku" width="600" />
 </p>
 
-A flexible emoji picker component for React Native with both modal and inline options. Designed to work seamlessly across all React Native platforms (iOS, Android, and Web
+A flexible emoji picker component for React Native with both modal and inline options. Designed to work seamlessly across all React Native platforms (iOS, Android, and Web).
 
 ## Features
 
