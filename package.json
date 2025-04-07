@@ -1,6 +1,6 @@
 {
   "name": "@hiraku-ai/react-native-emoji-picker",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A flexible emoji picker for React Native with both modal and inline options",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
