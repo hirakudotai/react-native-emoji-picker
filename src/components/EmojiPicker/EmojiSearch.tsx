@@ -1,13 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, Platform, ViewStyle, TextStyle } from 'react-native';
 import { SearchIcon, XIcon } from '../../assets/icons';
 
 interface EmojiSearchProps {
   value: string;
   onChangeText: (text: string) => void;
+  // Style customization props
+  searchContainerStyle?: ViewStyle;
+  searchInputStyle?: TextStyle;
+  placeholderText?: string;
+  placeholderTextColor?: string;
+  searchIconColor?: string;
+  clearIconColor?: string;
+  // Theme props
+  darkMode?: boolean;
 }
 
-export function EmojiSearch({ value, onChangeText }: EmojiSearchProps) {
+export function EmojiSearch({ 
+  value, 
+  onChangeText,
+  searchContainerStyle,
+  searchInputStyle,
+  placeholderText = "Search emojis...",
+  placeholderTextColor = "#9ca3af",
+  searchIconColor = "#9ca3af",
+  clearIconColor = "#9ca3af",
+  darkMode = false
+}: EmojiSearchProps) {
   const [localValue, setLocalValue] = useState(value);
   
   useEffect(() => {
@@ -24,17 +43,33 @@ export function EmojiSearch({ value, onChangeText }: EmojiSearchProps) {
     onChangeText('');
   }, [onChangeText]);
 
+  // Apply dark mode styles if enabled
+  const containerStyle = [
+    styles.container,
+    darkMode && { backgroundColor: '#1a1a1a' }
+  ];
+
+  const searchContainerDefaultStyle = [
+    styles.searchContainer,
+    darkMode && { backgroundColor: '#333' }
+  ];
+
+  const inputDefaultStyle = [
+    styles.input,
+    darkMode && { color: '#f5f5f5' }
+  ];
+
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <SearchIcon size={18} color="#9ca3af" style={styles.searchIcon} />
+    <View style={containerStyle}>
+      <View style={[searchContainerDefaultStyle, searchContainerStyle]}>
+        <SearchIcon size={18} color={searchIconColor} style={styles.searchIcon} />
         
         <TextInput
-          style={styles.input}
+          style={[inputDefaultStyle, searchInputStyle]}
           value={localValue}
           onChangeText={handleChange}
-          placeholder="Search emojis..."
-          placeholderTextColor="#9ca3af"
+          placeholder={placeholderText}
+          placeholderTextColor={placeholderTextColor}
           returnKeyType="search"
           autoCapitalize="none"
           autoCorrect={false}
@@ -42,7 +77,7 @@ export function EmojiSearch({ value, onChangeText }: EmojiSearchProps) {
         
         {localValue.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <XIcon size={16} color="#9ca3af" />
+            <XIcon size={16} color={clearIconColor} />
           </TouchableOpacity>
         )}
       </View>

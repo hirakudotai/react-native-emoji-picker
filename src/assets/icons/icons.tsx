@@ -105,4 +105,12 @@ export const FlagIcon = ({ size = 24, color = '#000', style }: IconProps) => (
     <Path d="M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9z" />
     <Path d="M5 21v-7" />
   </Svg>
+);
+
+export const HistoryIcon = ({ size = 24, color = '#000', style }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+    <Path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <Path d="M12 8l0 4l2 2" />
+    <Path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+  </Svg>
 ); 

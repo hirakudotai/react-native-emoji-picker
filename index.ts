@@ -7,9 +7,13 @@
  * @license Apache-2.0
  */
 
-// Re-export everything from the src directory
-export * from './src';
-export { default } from './src';
+import { ViewStyle, TextStyle } from 'react-native';
+import EmojiPicker, { EmojiPickerContent } from './src/components/EmojiPicker';
+import { EmojiData } from './src/types/emoji';
+import emojiData from './src/assets/data/emoji.json';
 
-export { EmojiPickerContent } from './src/components/EmojiPicker';
-export type { EmojiData } from './src/types/emoji'; 
+export type { EmojiData, ViewStyle, TextStyle };
+export { EmojiPickerContent, emojiData };
+export * from './src/assets/icons';
+
+export default EmojiPicker; 
