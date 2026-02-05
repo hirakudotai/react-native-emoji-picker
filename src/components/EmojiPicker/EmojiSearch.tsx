@@ -1,83 +1,145 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react';
 import { StyleSheet, TextInput, View, TouchableOpacity, Platform, ViewStyle, TextStyle } from 'react-native';
 import { SearchIcon, XIcon } from '../../assets/icons';
+import { useEmojiPickerTheme } from '../../theme';
 
 interface EmojiSearchProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  // Style customization props
-  searchContainerStyle?: ViewStyle;
-  searchInputStyle?: TextStyle;
+  onSearch: (text: string) => void;
+  debounceMs?: number;
+  minChars?: number;
   placeholderText?: string;
-  placeholderTextColor?: string;
-  searchIconColor?: string;
-  clearIconColor?: string;
-  // Theme props
-  darkMode?: boolean;
+  searchBarStyle?: ViewStyle;
+  searchInputStyle?: TextStyle;
+  showSearchIcon?: boolean;
+  containerStyle?: ViewStyle;
 }
 
-export function EmojiSearch({ 
-  value, 
-  onChangeText,
-  searchContainerStyle,
-  searchInputStyle,
+function EmojiSearchInner({ 
+  onSearch,
+  debounceMs = 150,
+  minChars = 2,
   placeholderText = "Search emojis...",
-  placeholderTextColor = "#9ca3af",
-  searchIconColor = "#9ca3af",
-  clearIconColor = "#9ca3af",
-  darkMode = false
+  searchBarStyle,
+  searchInputStyle,
+  showSearchIcon = true,
+  containerStyle,
 }: EmojiSearchProps) {
-  const [localValue, setLocalValue] = useState(value);
+  const [inputValue, setInputValue] = useState('');
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { theme } = useEmojiPickerTheme();
   
+  // Default layout values
+  const CONTAINER_PADDING_H = 16;
+  const CONTAINER_PADDING_V = 8;
+  const SEARCH_HEIGHT = 40;
+  const SEARCH_BORDER_RADIUS = 10;
+  const SEARCH_PADDING_H = 12;
+  const ICON_SIZE = 18;
+  const ICON_MARGIN = 8;
+  const CLEAR_ICON_SIZE = 16;
+  const INPUT_FONT_SIZE = 16;
+  const CLEAR_BUTTON_PADDING = 4;
+  
+  // Memoize theme colors
+  const themedColors = useMemo(() => ({
+    placeholder: theme.colors.placeholder,
+    searchIcon: theme.colors.icon,
+    clearIcon: theme.colors.icon,
+    background: theme.colors.background,
+    searchBackground: theme.colors.searchBackground,
+    text: theme.colors.text,
+  }), [theme]);
+
+  const handleChange = (text: string) => {
+    // Update local input immediately
+    setInputValue(text);
+    
+    // Clear existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Debounce the parent callback
+    timeoutRef.current = setTimeout(() => {
+      onSearch(text.length >= minChars ? text : '');
+    }, debounceMs);
+  };
+
+  const handleClear = () => {
+    setInputValue('');
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    onSearch('');
+  };
+
+  // Cleanup on unmount
   useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
-
-  const handleChange = useCallback((text: string) => {
-    setLocalValue(text);
-    onChangeText(text);
-  }, [onChangeText]);
-
-  const handleClear = useCallback(() => {
-    setLocalValue('');
-    onChangeText('');
-  }, [onChangeText]);
-
-  // Apply dark mode styles if enabled
-  const containerStyle = [
-    styles.container,
-    darkMode && { backgroundColor: '#1a1a1a' }
-  ];
-
-  const searchContainerDefaultStyle = [
-    styles.searchContainer,
-    darkMode && { backgroundColor: '#333' }
-  ];
-
-  const inputDefaultStyle = [
-    styles.input,
-    darkMode && { color: '#f5f5f5' }
-  ];
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <View style={containerStyle}>
-      <View style={[searchContainerDefaultStyle, searchContainerStyle]}>
-        <SearchIcon size={18} color={searchIconColor} style={styles.searchIcon} />
+    <View style={[
+      styles.container, 
+      {
+        paddingHorizontal: CONTAINER_PADDING_H,
+        paddingVertical: CONTAINER_PADDING_V,
+        backgroundColor: themedColors.background,
+      },
+      containerStyle
+    ]}>
+      <View style={[
+        styles.searchContainer,
+        {
+          height: SEARCH_HEIGHT,
+          borderRadius: SEARCH_BORDER_RADIUS,
+          paddingHorizontal: SEARCH_PADDING_H,
+          backgroundColor: themedColors.searchBackground,
+        },
+        searchBarStyle
+      ]}>
+        {showSearchIcon && (
+          <SearchIcon 
+            size={ICON_SIZE} 
+            color={themedColors.searchIcon} 
+            style={[styles.searchIcon, { marginRight: ICON_MARGIN }]} 
+          />
+        )}
         
         <TextInput
-          style={[inputDefaultStyle, searchInputStyle]}
-          value={localValue}
+          style={[
+            styles.input,
+            {
+              height: SEARCH_HEIGHT,
+              fontSize: INPUT_FONT_SIZE,
+              color: themedColors.text,
+            },
+            searchInputStyle
+          ]}
+          value={inputValue}
           onChangeText={handleChange}
           placeholder={placeholderText}
-          placeholderTextColor={placeholderTextColor}
+          placeholderTextColor={themedColors.placeholder}
           returnKeyType="search"
           autoCapitalize="none"
           autoCorrect={false}
+          accessibilityLabel="Search emojis"
+          accessibilityRole="search"
         />
         
-        {localValue.length > 0 && (
-          <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <XIcon size={16} color={clearIconColor} />
+        {inputValue.length > 0 && (
+          <TouchableOpacity 
+            onPress={handleClear} 
+            style={[styles.clearButton, { padding: CLEAR_BUTTON_PADDING }]}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            accessibilityHint="Double tap to clear the search field"
+          >
+            <XIcon size={CLEAR_ICON_SIZE} color={themedColors.clearIcon} />
           </TouchableOpacity>
         )}
       </View>
@@ -85,27 +147,23 @@ export function EmojiSearch({
   );
 }
 
+export const EmojiSearch = EmojiSearchInner;
+
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    // All styling now via props and theme
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f1f5f9',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    height: 40,
+    // All styling now via props and theme
   },
   searchIcon: {
-    marginRight: 8,
+    // All styling now via props and theme
   },
   input: {
     flex: 1,
-    height: 40,
-    fontSize: 16,
-    color: '#1f2937',
+    // All styling now via props and theme
     ...Platform.select({
       web: {
         outlineStyle: 'none',
@@ -113,7 +171,7 @@ const styles = StyleSheet.create({
     }),
   },
   clearButton: {
-    padding: 4,
+    // All styling now via props and theme
   },
 });
 

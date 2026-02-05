@@ -8,12 +8,12 @@
  */
 
 import { ViewStyle, TextStyle } from 'react-native';
-import EmojiPicker, { EmojiPickerContent } from './src/components/EmojiPicker';
+import EmojiPickerModal, { EmojiPicker } from './src/components/EmojiPicker';
 import { EmojiData } from './src/types/emoji';
 import emojiData from './src/assets/data/emoji.json';
 
 export type { EmojiData, ViewStyle, TextStyle };
-export { EmojiPickerContent, emojiData };
+export { EmojiPickerModal, EmojiPicker, emojiData };
 export * from './src/assets/icons';
 
-export default EmojiPicker; 
+export default EmojiPickerModal; 

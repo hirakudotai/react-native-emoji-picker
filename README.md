@@ -7,472 +7,150 @@
 </div>
 
 <p align="center">
-  <img src="https://hiraku.ai/content/images/2025/04/hiraku-react-native-emoji-picker.png" alt="React Native Emoji Picker - Hiraku" width="600" />
+  <img src="https://raw.githubusercontent.com/hirakudotai/react-native-emoji-picker/main/images/hiraku-react-native-emoji-picker.jpg" alt="React Native Emoji Picker" width="600" />
 </p>
 
-A flexible emoji picker component for React Native with both modal and inline options. Designed to work seamlessly across all React Native platforms (iOS, Android, and Web).
+A powerful, flexible emoji picker for React Native with modal and inline modes, extensive customization, and cross-platform support.
 
-## Features
+**Important note:** This component was “vibe coded,” so it may have issues. Please use it with caution.
 
-- 🚀 **Two integration options**: Use as a modal or embed directly in your UI
-- 🔍 **Powerful search**: Find emojis quickly with intelligent search
-- 🗂️ **Category navigation**: Browse emojis by intuitive categories
-- 🕒 **Recently used**: Tracks and displays your most frequently used emojis
-- 📱 **Cross-platform**: Works on iOS, Android, and Web
-- 🏎️ **High performance**: Optimized rendering for smooth scrolling
-- 🧩 **Peer dependencies**: Minimal footprint
+## ✨ Features
 
-## Installation
+- **🎯 Flexible Integration** - Modal, inline, or headless with hooks
+- **🛠️ High Customization** - Allows for almost total freedom
+- **🔍 Smart Search** - Fast emoji search with debouncing
+- **📂 Category Navigation** - Intuitive tab-based browsing
+- **🕐 Recent Emojis** - Automatically tracks frequently used emojis
+- **🎨 Full Theming** - Built-in dark mode + custom themes
+- **⚡ High Performance** - Optimized FlatList rendering
+- **📱 Cross-Platform** - iOS, Android, and Web ready
+
+## 🎉 Expo Go Compatible
+
+This library works seamlessly with **Expo Go** - no custom native code required! All dependencies are supported in Expo managed workflow. Just install and start using it in your Expo projects.
+
+## 🎮 Live Demo
+
+Try out the interactive demo with customization options: **[react-native-emoji-picker.netlify.app](https://react-native-emoji-picker.netlify.app/)**
+
+## 📦 Installation
 
 ```bash
-# npm
 npm install @hiraku-ai/react-native-emoji-picker
-
-# yarn
-yarn add @hiraku-ai/react-native-emoji-picker
-
-# pnpm
-pnpm add @hiraku-ai/react-native-emoji-picker
 ```
 
 ### Peer Dependencies
 
-This component requires the following peer dependencies:
-
 ```bash
-npm install react-native-gesture-handler @react-native-async-storage/async-storage react-native-reanimated react-native-svg
+npm install @react-native-async-storage/async-storage react-native-svg
 ```
 
-## Usage
+## 🚀 Quick Start
 
 ### Modal Version
 
 ```jsx
 import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+import EmojiPickerModal, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
 
-// In your component
-function MyComponent() {
-  const [selectedEmoji, setSelectedEmoji] = useState('');
-  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
+function App() {
+  const [visible, setVisible] = useState(false);
 
   return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setEmojiPickerVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          setSelectedEmoji(emoji);
-          setEmojiPickerVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isEmojiPickerVisible}
-        onClose={() => setEmojiPickerVisible(false)}
-        showHistoryTab={true}
-        showSearchBar={true}
-      />
-    </View>
-  );
-}
-```
-
-### Content-only Version
-
-```jsx
-import React from 'react';
-import { View } from 'react-native';
-import { EmojiPickerContent, emojiData } from '@hiraku-ai/react-native-emoji-picker';
-
-// In your component
-function InlineEmojiPicker() {
-  return (
-    <View style={{ height: 400 }}>
-      <EmojiPickerContent 
-        emojis={emojiData} 
+    <>
+      <Button title="Pick Emoji" onPress={() => setVisible(true)} />
+      <EmojiPickerModal
+        visible={visible}
+        onClose={() => setVisible(false)}
         onEmojiSelect={(emoji) => console.log(emoji)}
-        onClose={() => {}} // Not used for inline mode, but required by type
+        emojis={emojiData}
       />
-    </View>
+    </>
   );
 }
 ```
 
-## Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `emojis` | `EmojiData[]` | Required | Array of emoji data objects to display |
-| `onEmojiSelect` | `(emoji: string) => void` | Required | Callback when an emoji is selected |
-| `onClose` | `() => void` | Required | Callback when the modal is closed (not used for inline version) |
-| `visible` | `boolean` | Required | Controls visibility of the modal (modal version only) |
-| `showHistoryTab` | `boolean` | `true` | Enable/disable the recently used emojis feature |
-| `showSearchBar` | `boolean` | `true` | Enable/disable the emoji search functionality |
-| `showTabs` | `boolean` | `true` | Enable/disable the category tabs navigation |
-| `tabIconColors` | `Record<string, string>` | See description | Customize colors for category tab icons. Example: `{'Recently Used': '#ff0000'}` |
-| `searchContainerStyle` | `ViewStyle` | `undefined` | Custom styles for the search box container |
-| `searchInputStyle` | `TextStyle` | `undefined` | Custom styles for the search input text |
-| `searchPlaceholder` | `string` | `"Search emojis..."` | Custom placeholder text for the search input |
-| `searchPlaceholderColor` | `string` | `"#9ca3af"` | Custom color for the search placeholder text |
-| `searchIconColor` | `string` | `"#9ca3af"` | Custom color for the search icon |
-| `clearIconColor` | `string` | `"#9ca3af"` | Custom color for the clear (X) icon |
-| `activeTabStyle` | `ViewStyle` | `undefined` | Custom styles for the active category tab |
-| `tabStyle` | `ViewStyle` | `undefined` | Custom styles for all category tabs |
-| `modalTitle` | `string` | `"Pick an emoji"` | Custom title for the modal header |
-| `modalTitleStyle` | `TextStyle` | `undefined` | Custom styles for the modal title text |
-| `modalStyle` | `ViewStyle` | `undefined` | Custom styles for the modal container |
-| `modalBackgroundColor` | `string` | `"#fff"` | Background color of the modal |
-| `modalBorderRadius` | `number` | `16` | Border radius of the modal container |
-| `modalHeaderStyle` | `ViewStyle` | `undefined` | Custom styles for the modal header |
-| `modalCloseIconColor` | `string` | `"#666"` | Color of the close icon in the modal header |
-| `modalCloseIconSize` | `number` | `24` | Size of the close (X) icon |
-| `modalCloseIconStyle` | `ViewStyle` | `undefined` | Custom styles for the close icon container |
-| `darkMode` | `boolean` | `false` | Enable dark theme for the picker |
-| `categoryTitleStyle` | `TextStyle` | `undefined` | Custom styles for category titles |
-| `categoryTitleAlign` | `'left' \| 'center' \| 'right'` | `'left'` | Alignment of category titles |
-
-## Examples
-
-### Custom Tab Icon Colors
+### Inline Version
 
 ```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+import { EmojiPicker, emojiData } from '@hiraku-ai/react-native-emoji-picker';
 
-function CustomColoredEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  // Custom colors for category tabs
-  const customColors = {
-    'Recently Used': '#FF5733',
-    'Smileys & Emotion': '#33FF57',
-    'People & Body': '#3357FF',
-    'Food & Drink': '#F033FF',
-    'Travel & Places': '#FF3333'
-  };
-  
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        tabIconColors={customColors}
-      />
-    </View>
-  );
-}
+<View style={{ height: 400 }}>
+  <EmojiPicker
+    emojis={emojiData}
+    onEmojiSelect={(emoji) => console.log(emoji)}
+    onClose={() => {}}
+  />
+</View>
 ```
 
-### Customizing Visibility Options
+### Headless Mode
 
 ```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+import { useEmojiPicker, emojiData } from '@hiraku-ai/react-native-emoji-picker';
 
-function MinimalistEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
+function CustomPicker() {
+  const { emojiSections, recentEmojis, setSearchQuery } = useEmojiPicker({
+    emojis: emojiData
+  });
   
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        showHistoryTab={false} // Hide recently used emojis
-        showSearchBar={false}  // Hide search bar
-        showTabs={false}       // Hide category tabs
-      />
-    </View>
-  );
+  // Build your own UI with complete control
+  return <YourCustomUI emojis={emojiSections} />;
 }
 ```
 
-### Customizing the Search Box
+## 📚 What's Included
 
-```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+### 🎯 Ready-to-Use Components
+Drop these in and you're done:
+- `EmojiPickerModal` - Full-featured modal with everything built-in
+- `EmojiPicker` - Embeddable inline version
 
-function CustomSearchEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        // Search box customization
-        searchContainerStyle={{
-          backgroundColor: '#f0f8ff',
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: '#4682b4',
-        }}
-        searchInputStyle={{
-          color: '#333',
-          fontSize: 18,
-        }}
-        searchPlaceholder="Find an emoji..."
-        searchPlaceholderColor="#87ceeb"
-        searchIconColor="#4682b4"
-        clearIconColor="#4682b4"
-      />
-    </View>
-  );
-}
-```
+### 🔧 Building Blocks for Custom UIs
+Mix and match these standalone components:
+- `EmojiSearch` - Search bar with debouncing
+- `EmojiTabs` - Category navigation tabs
+- `SkinToneSelector` - Skin tone picker button
+- All category icons - Use our icon set in your custom UI
 
-### Customizing the Category Tabs
+### 🎨 Headless Mode for Total Control
+Build completely custom interfaces:
+- `useEmojiPicker` - Get all the logic, build any UI you want
+- `emojiSections` - Organized emoji data by category
+- `recentEmojis` - Access recent emoji tracking
+- Complete control over layout and interactions
 
-```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+### 🎭 Theme System
+- `EmojiPickerThemeProvider` - Wrap your app for consistent theming
+- `useEmojiPickerTheme` - Access theme values anywhere
+- `lightTheme` / `darkTheme` - Pre-built themes
+- `PartialTheme` - Override specific colors
 
-function CustomTabsEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  // Custom colors for category tabs
-  const customColors = {
-    'Recently Used': '#FF5733',
-    'Smileys & Emotion': '#33FF57',
-    'People & Body': '#3357FF',
-  };
-  
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        // Tab icon colors
-        tabIconColors={customColors}
-        // Tab styling
-        tabStyle={{
-          borderWidth: 1,
-          borderColor: '#e5e7eb',
-          borderRadius: 12,
-        }}
-        activeTabStyle={{
-          backgroundColor: '#e0f2fe',
-          borderColor: '#60a5fa',
-          borderWidth: 2,
-        }}
-      />
-    </View>
-  );
-}
-```
+### 📦 Data & Utilities
+- `emojiData` - Complete emoji dataset (3600+ emojis)
+- `SKIN_TONES` - All skin tone modifiers
+- `Category` - Category constants
+- Full TypeScript types included
 
-### Customizing the Modal Appearance
+## 📖 Documentation
 
-```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+- [API Reference](./documentation/api-reference.md) - Complete prop reference
+- [Theming Guide](./documentation/theming.md) - Customizing colors and styles  
+- [Advanced Features](./documentation/advanced-features.md) - Filtering, custom renders, performance
+- [Headless Mode](./documentation/headless-mode.md) - Build custom UIs with hooks
+- [TypeScript Guide](./documentation/typescript-guide.md) - Type definitions and examples
 
-function CustomModalEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        
-        // Modal customization
-        modalTitle="Select Your Emoji"
-        modalTitleStyle={{
-          color: '#1e40af',
-          fontSize: 20,
-          fontWeight: 'bold',
-        }}
-        modalBackgroundColor="#f8fafc"
-        modalBorderRadius={24}
-        modalStyle={{
-          borderWidth: 2,
-          borderColor: '#3b82f6',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.3,
-          shadowRadius: 10,
-          elevation: 10,
-        }}
-        modalHeaderStyle={{
-          borderBottomWidth: 1,
-          borderBottomColor: '#cbd5e1',
-          paddingBottom: 12,
-        }}
-        modalCloseIconColor="#3b82f6"
-      />
-    </View>
-  );
-}
-```
 
-### Using Dark Mode
+## 📄 License
 
-```jsx
-import React, { useState } from 'react';
-import { View, Button, useColorScheme } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+Apache License 2.0
 
-function DarkModeEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
-  
-  return (
-    <View style={{ backgroundColor: isDarkMode ? '#121212' : '#fff' }}>
-      <Button 
-        title="Open Emoji Picker" 
-        onPress={() => setIsVisible(true)} 
-        color={isDarkMode ? '#3b82f6' : '#2563eb'}
-      />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        darkMode={isDarkMode}
-        // You can still customize even in dark mode
-        modalTitle="Choose an Emoji"
-        modalTitleStyle={{
-          fontWeight: 'bold',
-        }}
-      />
-    </View>
-  );
-}
-```
+## 👨‍💻 Author
 
-### Customizing Category Titles
+**Stef Buzas** - [Hiraku](https://hiraku.ai)
 
-```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
+## 🔗 Links
 
-function CustomCategoryTitlesEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        // Category title customization
-        categoryTitleStyle={{
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: '#3b82f6',
-          textTransform: 'uppercase',
-          letterSpacing: 1,
-          paddingBottom: 10,
-        }}
-        categoryTitleAlign="center"
-      />
-    </View>
-  );
-}
-```
-
-### Customizing Close Icon
-
-```jsx
-import React, { useState } from 'react';
-import { View, Button } from 'react-native';
-import EmojiPicker, { emojiData } from '@hiraku-ai/react-native-emoji-picker';
-
-function CustomCloseIconEmojiPicker() {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  return (
-    <View>
-      <Button title="Open Emoji Picker" onPress={() => setIsVisible(true)} />
-      <EmojiPicker
-        onEmojiSelect={(emoji) => {
-          console.log(emoji);
-          setIsVisible(false);
-        }}
-        emojis={emojiData}
-        visible={isVisible}
-        onClose={() => setIsVisible(false)}
-        // Close icon customization
-        modalCloseIconColor="#e11d48"
-        modalCloseIconSize={32}
-        modalCloseIconStyle={{
-          backgroundColor: 'rgba(225, 29, 72, 0.1)',
-          padding: 8,
-          borderRadius: 20,
-          marginLeft: 10,
-        }}
-      />
-    </View>
-  );
-}
-```
-
-## License
-
-[Apache License 2.0](LICENSE)
-
-## Author
-
-- **Stef Buzas** - [stefbuzas.com](https://stefbuzas.com)
-- **Hiraku** - [hiraku.ai](https://hiraku.ai)
-
-## Links
-
-- **GitHub**: [https://github.com/hirakudotai/react-native-emoji-picker](https://github.com/hirakudotai/react-native-emoji-picker)
-- **Issues**: [https://github.com/hirakudotai/react-native-emoji-picker/issues](https://github.com/hirakudotai/react-native-emoji-picker/issues)
-- **Website**: [https://hiraku.ai](https://hiraku.ai)
-
-## Acknowledgements
-
-- [emoji-db](https://github.com/github/gemoji) - Emoji database from GitHub (MIT License)
-- [Tabler Icons](https://tabler-icons.io/) - Icon set used for the UI components (MIT License)
-- [React Native Gesture Handler](https://github.com/software-mansion/react-native-gesture-handler) - Gesture system used for interactions (MIT License)
-- [React Native Reanimated](https://github.com/software-mansion/react-native-reanimated) - Animation library for smooth UI experiences (MIT License)
-- [@react-native-async-storage/async-storage](https://github.com/react-native-async-storage/async-storage) - Data persistence for recently used emojis (MIT License)
-- [React Native SVG](https://github.com/software-mansion/react-native-svg) - SVG support for React Native (MIT License)
-- Special thanks to the React Native community 
+- [GitHub](https://github.com/hirakudotai/react-native-emoji-picker)
+- [Issues](https://github.com/hirakudotai/react-native-emoji-picker/issues)
+- [NPM](https://www.npmjs.com/package/@hiraku-ai/react-native-emoji-picker)

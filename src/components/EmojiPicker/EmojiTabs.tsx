@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { StyleSheet, View, FlatList, TouchableOpacity, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View, FlatList, TouchableOpacity, ViewStyle, Platform } from 'react-native';
 import { 
   MoodSmileIcon, 
   UserIcon, 
@@ -12,15 +12,16 @@ import {
   FlagIcon,
   HistoryIcon 
 } from '../../assets/icons';
+import { useEmojiPickerTheme } from '../../theme';
 
 interface EmojiTabsProps {
   categories: string[];
   activeCategory: string | null;
   onCategoryPress: (category: string) => void;
   tabIconColors?: Record<string, string>;
-  activeTabStyle?: ViewStyle;
+  tabsContainerStyle?: ViewStyle;
   tabStyle?: ViewStyle;
-  darkMode?: boolean;
+  activeTabStyle?: ViewStyle;
 }
 
 // Default colors for category icons
@@ -42,14 +43,34 @@ export function EmojiTabs({
   activeCategory, 
   onCategoryPress, 
   tabIconColors = {},
-  activeTabStyle,
+  tabsContainerStyle,
   tabStyle,
-  darkMode = false
+  activeTabStyle,
 }: EmojiTabsProps) {
+  const { theme } = useEmojiPickerTheme();
+  
+  // Default layout values
+  const CONTAINER_HEIGHT = 56;
+  const BORDER_WIDTH = 1;
+  const ICON_SIZE = 22;
+  const BUTTON_WIDTH = 44;
+  const BUTTON_HEIGHT = 44;
+  const BUTTON_BORDER_RADIUS = 10;
+  const BUTTON_MARGIN_H = 4;
+  const CONTENT_PADDING_H = 12;
+  
+  // Memoize theme colors
+  const themedColors = useMemo(() => ({
+    tabsBorder: theme.colors.tabsBorder,
+    tabBackground: theme.colors.tabBackground,
+    tabActiveBackground: theme.colors.tabActiveBackground,
+    icon: theme.colors.icon,
+  }), [theme]);
+  
   // Get the color for a category, using custom color if provided or default color as fallback
   const getCategoryColor = useCallback((category: string) => {
-    return tabIconColors[category] || DEFAULT_ICON_COLORS[category] || '#6b7280';
-  }, [tabIconColors]);
+    return tabIconColors[category] || DEFAULT_ICON_COLORS[category] || themedColors.icon;
+  }, [tabIconColors, themedColors.icon]);
 
   // Create dynamic category icons with custom colors
   const getCategoryIcon = useCallback((category: string) => {
@@ -57,47 +78,58 @@ export function EmojiTabs({
     
     switch (category) {
       case 'Recently Used':
-        return <HistoryIcon size={22} color={color} />;
+        return <HistoryIcon size={ICON_SIZE} color={color} />;
       case 'Smileys & Emotion':
-        return <MoodSmileIcon size={22} color={color} />;
+        return <MoodSmileIcon size={ICON_SIZE} color={color} />;
       case 'People & Body':
-        return <UserIcon size={22} color={color} />;
+        return <UserIcon size={ICON_SIZE} color={color} />;
       case 'Animals & Nature':
-        return <LeafIcon size={22} color={color} />;
+        return <LeafIcon size={ICON_SIZE} color={color} />;
       case 'Food & Drink':
-        return <PizzaIcon size={22} color={color} />;
+        return <PizzaIcon size={ICON_SIZE} color={color} />;
       case 'Travel & Places':
-        return <CarIcon size={22} color={color} />;
+        return <CarIcon size={ICON_SIZE} color={color} />;
       case 'Activities':
-        return <DeviceGamepadIcon size={22} color={color} />;
+        return <DeviceGamepadIcon size={ICON_SIZE} color={color} />;
       case 'Objects':
-        return <BulbIcon size={22} color={color} />;
+        return <BulbIcon size={ICON_SIZE} color={color} />;
       case 'Symbols':
-        return <HashIcon size={22} color={color} />;
+        return <HashIcon size={ICON_SIZE} color={color} />;
       case 'Flags':
-        return <FlagIcon size={22} color={color} />;
+        return <FlagIcon size={ICON_SIZE} color={color} />;
       default:
-        return <HashIcon size={22} color={color} />;
+        return <HashIcon size={ICON_SIZE} color={color} />;
     }
   }, [getCategoryColor]);
 
-  // Apply dark mode styles
-  const containerStyle = [
+  // Memoize style arrays
+  const containerStyle = useMemo(() => [
     styles.container,
-    darkMode && { borderBottomColor: '#333' }
-  ];
+    {
+      height: CONTAINER_HEIGHT,
+      borderBottomWidth: BORDER_WIDTH,
+      borderBottomColor: themedColors.tabsBorder,
+    },
+    tabsContainerStyle
+  ], [themedColors.tabsBorder, tabsContainerStyle]);
 
-  const defaultTabStyle = [
+  const defaultTabStyle = useMemo(() => [
     styles.tabButton,
-    darkMode && { backgroundColor: 'rgba(255, 255, 255, 0.05)' },
+    {
+      width: BUTTON_WIDTH,
+      height: BUTTON_HEIGHT,
+      borderRadius: BUTTON_BORDER_RADIUS,
+      marginHorizontal: BUTTON_MARGIN_H,
+      backgroundColor: themedColors.tabBackground,
+    },
     tabStyle,
-  ];
+  ], [themedColors.tabBackground, tabStyle]);
 
-  const defaultActiveTabStyle = [
+  const defaultActiveTabStyle = useMemo(() => [
     styles.tabButtonActive,
-    darkMode && { backgroundColor: '#333' },
+    { backgroundColor: themedColors.tabActiveBackground },
     activeTabStyle
-  ];
+  ], [themedColors.tabActiveBackground, activeTabStyle]);
 
   const renderItem = useCallback(({ item }: { item: string }) => {
     const isActive = activeCategory === item;
@@ -109,6 +141,10 @@ export function EmojiTabs({
           isActive && defaultActiveTabStyle
         ]}
         activeOpacity={0.6}
+        accessibilityRole="tab"
+        accessibilityLabel={`${item} category`}
+        accessibilityState={{ selected: isActive }}
+        accessibilityHint="Double tap to view this emoji category"
       >
         {getCategoryIcon(item)}
       </TouchableOpacity>
@@ -123,7 +159,23 @@ export function EmojiTabs({
         keyExtractor={(item) => item}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.tabsContent}
+        contentContainerStyle={[
+          styles.tabsContent, 
+          { paddingHorizontal: CONTENT_PADDING_H }
+        ]}
+        {...Platform.select({
+          web: {
+            scrollEnabled: true,
+            // @ts-ignore - web only property for mouse wheel support
+            onWheel: (e: any) => {
+              const list = e.currentTarget;
+              if (list) {
+                list.scrollLeft += e.deltaY;
+              }
+            }
+          },
+          default: {}
+        })}
       />
     </View>
   );
@@ -131,23 +183,18 @@ export function EmojiTabs({
 
 const styles = StyleSheet.create({
   container: {
-    height: 56,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    // All styling now via props and theme
   },
   tabsContent: {
-    paddingHorizontal: 12,
+    // All styling now via props and theme
   },
   tabButton: {
-    width: 44,
-    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
-    marginHorizontal: 4,
+    // All other styling now via props and theme
   },
   tabButtonActive: {
-    backgroundColor: '#f0f0f5',
+    // All styling now via props and theme
   },
 });
 
