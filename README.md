@@ -147,7 +147,7 @@ Apache License 2.0
 
 ## 👨‍💻 Author
 
-**Stef Buzas** - [Hiraku](https://hiraku.ai)
+**Stef Buzas** ([https://stefbuzas.com](https://stefbuzas.com)) at Hiraku ([https://hiraku.ai](https://hiraku.ai))
 
 ## 🔗 Links
 
