@@ -252,19 +252,14 @@ function EmojiPickerInternal({
   );
 }
 
-// Public modal wrapper component with optional theme provider
+// Public modal wrapper component with theme provider
 export function EmojiPickerModal(props: EmojiPickerModalProps) {
   const { darkMode, theme } = props;
   
-  // Only use theme provider if theme customization is explicitly provided
-  if (theme || darkMode) {
-    return (
-      <EmojiPickerThemeProvider darkMode={darkMode} theme={theme}>
-        <EmojiPickerInternal {...props} />
-      </EmojiPickerThemeProvider>
-    );
-  }
-  
-  // Otherwise render directly without context overhead
-  return <EmojiPickerInternal {...props} />;
+  // Always wrap in theme provider since EmojiPickerInternal uses the theme context
+  return (
+    <EmojiPickerThemeProvider darkMode={darkMode} theme={theme}>
+      <EmojiPickerInternal {...props} />
+    </EmojiPickerThemeProvider>
+  );
 }

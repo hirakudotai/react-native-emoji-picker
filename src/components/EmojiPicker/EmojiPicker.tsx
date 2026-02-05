@@ -452,15 +452,10 @@ function EmojiPickerInternal({
 export function EmojiPicker(props: EmojiPickerProps) {
   const { darkMode = false, theme } = props;
   
-  // Only wrap with provider if theme customization is explicitly provided
-  if (theme || darkMode) {
-    return (
-      <EmojiPickerThemeProvider darkMode={darkMode} theme={theme}>
-        <EmojiPickerInternal {...props} />
-      </EmojiPickerThemeProvider>
-    );
-  }
-  
-  // Otherwise use default theme without extra provider
-  return <EmojiPickerInternal {...props} />;
+  // Always wrap in theme provider since EmojiPickerInternal uses the theme context
+  return (
+    <EmojiPickerThemeProvider darkMode={darkMode} theme={theme}>
+      <EmojiPickerInternal {...props} />
+    </EmojiPickerThemeProvider>
+  );
 }
