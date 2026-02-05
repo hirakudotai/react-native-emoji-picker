@@ -102,11 +102,11 @@ function EmojiPickerInternal({
     }
   }, [visible]);
 
-  // Don't render anything if not visible
-  if (!isModalVisible && !visible) return null;
-
   // Calculate dynamic modal dimensions (updates on rotation)
   const { width, height } = useWindowDimensions();
+
+  // Don't render anything if not visible
+  if (!isModalVisible && !visible) return null;
   const modalWidth = width * modalWidthPercentage;
   const modalHeight = height * modalHeightPercentage;
 

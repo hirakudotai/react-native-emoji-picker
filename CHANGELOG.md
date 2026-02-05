@@ -2,11 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.1] - 2026-02-05
+## [1.2.1 - 1.2.2] - 2026-02-05
 
 ### Fixed
-- **Critical bug fix** - Theme provider now always wraps components to prevent infinite render loop
-- Fixed modal crash when opening without explicit theme prop
+- **Critical bug fix** - Fixed modal crash
 
 ## [1.2.0] - 2026-02-05
 
