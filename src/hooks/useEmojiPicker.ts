@@ -11,6 +11,7 @@ export interface UseEmojiPickerProps {
   maxRecentEmojis?: number;
   defaultSkinTone?: string;
   columns?: number;
+  categoryOrder?: string[];
 }
 
 export function useEmojiPicker({
@@ -19,6 +20,7 @@ export function useEmojiPicker({
   maxRecentEmojis = 6,
   defaultSkinTone = '',
   columns = 6,
+  categoryOrder,
 }: UseEmojiPickerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export function useEmojiPicker({
   }, []);
 
   // Group emojis by category, including recently used
-  const emojiSections = useMemo(() => {
+  const rawEmojiSections = useMemo(() => {
     if (!emojis?.length) return [];
     
     const processedEmojis = searchQuery
@@ -71,6 +73,30 @@ export function useEmojiPicker({
     
     return categories;
   }, [emojis, searchQuery, recentEmojis, showHistoryTab]);
+
+  // Apply category ordering if specified
+  const emojiSections = useMemo(() => {
+    if (!categoryOrder || categoryOrder.length === 0) {
+      return rawEmojiSections;
+    }
+
+    const sectionMap = new Map(rawEmojiSections.map(section => [section.title, section]));
+    const ordered: typeof rawEmojiSections = [];
+
+    categoryOrder.forEach(categoryName => {
+      const section = sectionMap.get(categoryName);
+      if (section) {
+        ordered.push(section);
+        sectionMap.delete(categoryName);
+      }
+    });
+
+    sectionMap.forEach(section => {
+      ordered.push(section);
+    });
+
+    return ordered;
+  }, [rawEmojiSections, categoryOrder]);
 
   // Flatten data for FlatList
   const flatListData = useMemo(() => {

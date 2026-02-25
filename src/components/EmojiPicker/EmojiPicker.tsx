@@ -8,6 +8,11 @@ import { EmojiPickerProps, FlatListItem } from './types';
 import { SkinToneSelector } from './SkinToneSelector';
 import { styles } from './styles';
 
+type ScrollableListRef = {
+  scrollToIndex?: (params: { index: number; animated?: boolean; viewPosition?: number }) => void;
+  scrollToOffset?: (params: { offset: number; animated?: boolean }) => void;
+};
+
 // Internal content component (uses theme from context)
 function EmojiPickerInternal({ 
   onEmojiSelect, 
@@ -54,6 +59,9 @@ function EmojiPickerInternal({
   // Theme
   darkMode = false,
   theme: customTheme,
+  // Custom scroll components
+  FlatListComponent = FlatList,
+  TabFlatListComponent = FlatList,
   // Custom renders
   renderCustomTabs,
   renderCustomSearch,
@@ -136,66 +144,10 @@ function EmojiPickerInternal({
     maxRecentEmojis,
     defaultSkinTone,
     columns,
+    categoryOrder,
   });
 
-  const flatListRef = useRef<FlatList>(null);
-  
-  // Apply category ordering if specified (skip if not needed)
-  const orderedEmojiSections = useMemo(() => {
-    if (!categoryOrder || categoryOrder.length === 0) {
-      return emojiSections;
-    }
-    
-    const sectionMap = new Map(emojiSections.map(section => [section.title, section]));
-    const ordered: typeof emojiSections = [];
-    
-    categoryOrder.forEach(categoryName => {
-      const section = sectionMap.get(categoryName);
-      if (section) {
-        ordered.push(section);
-        sectionMap.delete(categoryName);
-      }
-    });
-    
-    sectionMap.forEach(section => {
-      ordered.push(section);
-    });
-    
-    return ordered;
-  }, [emojiSections, categoryOrder]);
-  
-  // Use flatListData from hook if no reordering, otherwise rebuild
-  // Note: This must be defined before handleCategoryPress which uses it
-  const finalFlatListData = useMemo(() => {
-    // If no custom ordering, use the flatListData from hook directly
-    if (!categoryOrder || categoryOrder.length === 0) {
-      return flatListData;
-    }
-    
-    // Otherwise rebuild with ordered sections
-    const items: any[] = [];
-    const EMOJIS_PER_ROW = columns;
-    
-    orderedEmojiSections.forEach((section, sectionIndex) => {
-      items.push({
-        type: 'header',
-        category: section.title,
-        id: `header-${sectionIndex}`
-      });
-      
-      const emojis = section.data;
-      for (let i = 0; i < emojis.length; i += EMOJIS_PER_ROW) {
-        const rowEmojis = emojis.slice(i, i + EMOJIS_PER_ROW);
-        items.push({
-          type: 'emojiRow',
-          emojis: rowEmojis,
-          id: `row-${sectionIndex}-${i}`
-        });
-      }
-    });
-    
-    return items;
-  }, [categoryOrder, flatListData, orderedEmojiSections, columns]);
+  const flatListRef = useRef<ScrollableListRef | null>(null);
   
   // Handle emoji selection
   const handleEmojiSelect = useCallback((emoji: string) => {
@@ -207,20 +159,18 @@ function EmojiPickerInternal({
   const handleCategoryPress = useCallback((category: string) => {
     setActiveCategory(category);
     
-    // Find the index of the header item for this category in finalFlatListData
-    const headerIndex = finalFlatListData.findIndex(
+    const headerIndex = flatListData.findIndex(
       item => item.type === 'header' && item.category === category
     );
     
-    if (flatListRef.current && headerIndex !== -1) {
-      // scrollToIndex with proper error handling via onScrollToIndexFailed
+    if (flatListRef.current?.scrollToIndex && headerIndex !== -1) {
       flatListRef.current.scrollToIndex({
         index: headerIndex,
         animated: true,
         viewPosition: 0
       });
     }
-  }, [finalFlatListData, setActiveCategory]);
+  }, [flatListData, setActiveCategory]);
 
   // Boolean to track if we're in search mode
   const isSearchMode = !!searchQuery && showSearchBar;
@@ -313,7 +263,7 @@ function EmojiPickerInternal({
 
   // Render empty state
   const renderEmptyComponent = useCallback(() => {
-    if (isSearchMode && orderedEmojiSections.length === 0) {
+    if (isSearchMode && emojiSections.length === 0) {
       return (
         <View style={[styles.noResultsContainer, { padding: NO_RESULTS_PADDING }]}>
           <Text style={[
@@ -327,7 +277,7 @@ function EmojiPickerInternal({
       );
     }
     return null;
-  }, [isSearchMode, orderedEmojiSections.length, themedStyles.noResults, noResultsStyle]);
+  }, [isSearchMode, emojiSections.length, themedStyles.noResults, noResultsStyle]);
 
   // Render search bar
   const renderSearch = () => {
@@ -349,7 +299,6 @@ function EmojiPickerInternal({
         searchBarStyle={searchBarStyle}
         searchInputStyle={searchInputStyle}
         showSearchIcon={showSearchIcon}
-        containerStyle={containerStyle}
       />
     );
   };
@@ -375,7 +324,7 @@ function EmojiPickerInternal({
     
     if (renderCustomTabs) {
       return renderCustomTabs({
-        categories: orderedEmojiSections.map(section => section.title),
+        categories: emojiSections.map(section => section.title),
         activeCategory,
         onCategoryPress: handleCategoryPress,
       });
@@ -383,13 +332,14 @@ function EmojiPickerInternal({
     
     return (
       <EmojiTabs 
-        categories={orderedEmojiSections.map(section => section.title)} 
+        categories={emojiSections.map(section => section.title)} 
         activeCategory={activeCategory} 
         onCategoryPress={handleCategoryPress}
         tabIconColors={tabIconColors}
         tabsContainerStyle={tabsContainerStyle}
         tabStyle={tabStyle}
         activeTabStyle={activeTabStyle}
+        FlatListComponent={TabFlatListComponent}
       />
     );
   };
@@ -400,43 +350,38 @@ function EmojiPickerInternal({
       { backgroundColor: themedStyles.background },
       containerStyle
     ]}>
-      <View style={containerStyle}>
-        {renderSearch()}
-      </View>
+      {renderSearch()}
+      {renderSkinTone()}
+      {renderTabs()}
       
-      <View style={containerStyle}>
-        {renderSkinTone()}
-      </View>
-      
-      <View style={containerStyle}>
-        {renderTabs()}
-      </View>
-      
-      <FlatList
+      <FlatListComponent
         ref={flatListRef}
-        data={finalFlatListData}
+        data={flatListData}
         renderItem={renderItem}
         ListEmptyComponent={renderEmptyComponent}
-        keyExtractor={(item) => item.id}
-        style={[styles.scrollView, { backgroundColor: themedStyles.background }, containerStyle]}
+        keyExtractor={(item: FlatListItem) => item.id}
+        style={[styles.scrollView, { backgroundColor: themedStyles.background }]}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={removeClippedSubviews}
         maxToRenderPerBatch={maxToRenderPerBatch}
         updateCellsBatchingPeriod={updateCellsBatchingPeriod}
         initialNumToRender={initialNumToRender}
         windowSize={windowSize}
-        nestedScrollEnabled={true}
-        onScrollToIndexFailed={(info) => {
-          // When scrollToIndex fails (item not yet rendered), scroll to approximate offset first
-          // This forces FlatList to render items in that area
-          flatListRef.current?.scrollToOffset({
-            offset: info.averageItemLength * info.index,
-            animated: false
-          });
-          
-          // Then retry scrolling to the exact index once items are rendered
+        onScrollToIndexFailed={(info: any) => {
+          const listRef = flatListRef.current;
+          if (!listRef?.scrollToIndex) {
+            return;
+          }
+
+          if (listRef.scrollToOffset) {
+            listRef.scrollToOffset({
+              offset: info.averageItemLength * info.index,
+              animated: false
+            });
+          }
+
           setTimeout(() => {
-            flatListRef.current?.scrollToIndex({ 
+            listRef.scrollToIndex?.({ 
               index: info.index, 
               animated: true,
               viewPosition: 0

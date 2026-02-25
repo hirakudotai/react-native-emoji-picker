@@ -68,6 +68,10 @@ export interface EmojiPickerProps {
   darkMode?: boolean;
   theme?: PartialTheme;
   
+  // Custom scroll components (e.g. BottomSheetFlatList for gesture handler compatibility)
+  FlatListComponent?: React.ElementType;
+  TabFlatListComponent?: React.ElementType;
+
   // Custom renders
   renderCustomTabs?: (props: {
     categories: string[];

@@ -146,6 +146,8 @@ import { EmojiPicker, emojiData } from '@hiraku-ai/react-native-emoji-picker';
 
 | Prop | Type | Description |
 |------|------|-------------|
+| `FlatListComponent` | `ElementType` | Replace the main emoji grid FlatList (e.g. `BottomSheetFlatList`) |
+| `TabFlatListComponent` | `ElementType` | Replace the category tabs FlatList (e.g. `BottomSheetFlatList`) |
 | `renderCustomTabs` | `(props) => ReactNode` | Replace tab navigation |
 | `renderCustomSearch` | `(props) => ReactNode` | Replace search bar |
 | `renderCustomSkinToneSelector` | `(props) => ReactNode` | Replace skin tone selector |

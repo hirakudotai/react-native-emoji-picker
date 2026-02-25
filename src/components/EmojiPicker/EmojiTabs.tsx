@@ -22,6 +22,7 @@ interface EmojiTabsProps {
   tabsContainerStyle?: ViewStyle;
   tabStyle?: ViewStyle;
   activeTabStyle?: ViewStyle;
+  FlatListComponent?: React.ElementType;
 }
 
 // Default colors for category icons
@@ -46,6 +47,7 @@ export function EmojiTabs({
   tabsContainerStyle,
   tabStyle,
   activeTabStyle,
+  FlatListComponent = FlatList,
 }: EmojiTabsProps) {
   const { theme } = useEmojiPickerTheme();
   
@@ -153,10 +155,10 @@ export function EmojiTabs({
 
   return (
     <View style={containerStyle}>
-      <FlatList
+      <FlatListComponent
         data={categories}
         renderItem={renderItem}
-        keyExtractor={(item) => item}
+        keyExtractor={(item: string) => item}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={[

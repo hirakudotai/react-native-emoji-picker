@@ -35,6 +35,7 @@ useEmojiPicker({
   maxRecentEmojis?: number;      // Default: 6
   defaultSkinTone?: string;      // Default: ''
   columns?: number;              // Default: 6 (for flatListData)
+  categoryOrder?: string[];      // Custom category ordering
 })
 ```
 
@@ -425,6 +426,89 @@ function FullCustomPicker() {
         }}
       />
     </View>
+  );
+}
+```
+
+---
+
+## useEmojiPickerRenderer Hook
+
+If you want to bring your own scroll component but still use the built-in render logic, use `useEmojiPickerRenderer`. It accepts the outputs of `useEmojiPicker` plus styling props, and returns `renderItem` and `renderEmptyComponent` ready to pass to any FlatList-compatible component.
+
+> Requires being inside an `EmojiPickerThemeProvider` for theming.
+
+```typescript
+useEmojiPickerRenderer({
+  // From useEmojiPicker
+  onEmojiSelect: (emoji: string) => void;
+  getModifiedEmoji: (emoji: string) => string;
+  updateRecentEmojis: (emoji: string) => void;
+  selectedSkinTone: string;
+  emojiSections: Section[];
+  searchQuery: string;
+
+  // Optional
+  columns?: number;
+  showSearchBar?: boolean;
+  categoryHeaderStyle?: TextStyle;
+  categoryContainerStyle?: ViewStyle;
+  emojiButtonStyle?: ViewStyle;
+  noResultsStyle?: TextStyle;
+  categoryNameMap?: Record<string, string>;
+  renderCategoryHeader?: (props: { category: string; displayName: string }) => ReactNode;
+})
+```
+
+Returns: `{ renderItem, renderEmptyComponent }`
+
+### Bottom Sheet Example
+
+Use with `@gorhom/bottom-sheet` or any gesture-handler-aware scroll component:
+
+```jsx
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import {
+  useEmojiPicker,
+  useEmojiPickerRenderer,
+  EmojiPickerThemeProvider,
+  emojiData,
+} from '@hiraku-ai/react-native-emoji-picker';
+
+function BottomSheetPickerContent({ onEmojiSelect }) {
+  const {
+    flatListData,
+    emojiSections,
+    selectedSkinTone,
+    searchQuery,
+    getModifiedEmoji,
+    updateRecentEmojis,
+  } = useEmojiPicker({ emojis: emojiData });
+
+  const { renderItem, renderEmptyComponent } = useEmojiPickerRenderer({
+    onEmojiSelect,
+    getModifiedEmoji,
+    updateRecentEmojis,
+    selectedSkinTone,
+    emojiSections,
+    searchQuery,
+  });
+
+  return (
+    <BottomSheetFlatList
+      data={flatListData}
+      renderItem={renderItem}
+      ListEmptyComponent={renderEmptyComponent}
+      keyExtractor={(item) => item.id}
+    />
+  );
+}
+
+function BottomSheetPicker({ onEmojiSelect }) {
+  return (
+    <EmojiPickerThemeProvider>
+      <BottomSheetPickerContent onEmojiSelect={onEmojiSelect} />
+    </EmojiPickerThemeProvider>
   );
 }
 ```

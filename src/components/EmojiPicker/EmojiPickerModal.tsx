@@ -51,6 +51,7 @@ function EmojiPickerInternal({
   tabIconColors,
   // Theme
   darkMode = false,
+  FlatListComponent,
   // Custom renders
   renderCustomTabs,
   renderCustomSearch,
@@ -236,6 +237,7 @@ function EmojiPickerInternal({
             searchPlaceholder={searchPlaceholder}
             tabIconColors={tabIconColors}
             darkMode={darkMode}
+            FlatListComponent={FlatListComponent}
             renderCustomTabs={renderCustomTabs}
             renderCustomSearch={renderCustomSearch}
             renderCustomSkinToneSelector={renderCustomSkinToneSelector}

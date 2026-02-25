@@ -14,10 +14,12 @@ export { default } from './components/EmojiPicker';
 
 // Hooks
 export { useEmojiPicker } from './hooks/useEmojiPicker';
+export { useEmojiPickerRenderer } from './hooks/useEmojiPickerRenderer';
 
 // Types
 export type { EmojiPickerProps, EmojiPickerModalProps, Section, FlatListItem } from './components/EmojiPicker';
 export type { UseEmojiPickerProps } from './hooks/useEmojiPicker';
+export type { UseEmojiPickerRendererProps } from './hooks/useEmojiPickerRenderer';
 export type { EmojiData } from './types/emoji';
 export type { EmojiPickerTheme, PartialTheme } from './theme';
 

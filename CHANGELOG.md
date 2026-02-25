@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2026-02-25
+
+### Added
+
+**Bottom Sheet / Gesture Handler Compatibility**
+- `FlatListComponent` prop on `EmojiPicker` — pass any FlatList-compatible component (e.g. `BottomSheetFlatList` from `@gorhom/bottom-sheet`) to replace the internal scroll view
+- `TabFlatListComponent` prop on `EmojiPicker` — pass a RNGH-compatible component (e.g. `BottomSheetFlatList`) to replace the category tabs `FlatList`, fixing horizontal scroll conflicts on Android inside `@gorhom/bottom-sheet`
+- `useEmojiPickerRenderer` hook — exports `renderItem` and `renderEmptyComponent` for fully headless implementations that bring their own scroll component
+
+### Changed
+- `useEmojiPicker` now accepts `categoryOrder` and returns `emojiSections` and `flatListData` already ordered
+- `categoryOrder` support moved into `useEmojiPicker`, so ordering now works in headless mode without extra consumer-side logic
+
 ## [1.2.1 - 1.2.2] - 2026-02-05
 
 ### Fixed

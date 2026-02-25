@@ -84,18 +84,58 @@ import { EmojiPicker, emojiData } from '@hiraku-ai/react-native-emoji-picker';
 </View>
 ```
 
+### Bottom Sheet / Gesture Handler
+
+Pass `BottomSheetFlatList` for both props to fix scroll conflicts on Android when using `@gorhom/bottom-sheet`.
+
+```jsx
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { EmojiPicker, emojiData } from '@hiraku-ai/react-native-emoji-picker';
+
+<EmojiPicker
+  emojis={emojiData}
+  onEmojiSelect={(emoji) => console.log(emoji)}
+  FlatListComponent={BottomSheetFlatList}
+  TabFlatListComponent={BottomSheetFlatList}
+/>
+```
+
 ### Headless Mode
 
 ```jsx
-import { useEmojiPicker, emojiData } from '@hiraku-ai/react-native-emoji-picker';
+import { useEmojiPicker, useEmojiPickerRenderer, EmojiPickerThemeProvider, emojiData } from '@hiraku-ai/react-native-emoji-picker';
 
-function CustomPicker() {
-  const { emojiSections, recentEmojis, setSearchQuery } = useEmojiPicker({
+function CustomPickerContent() {
+  const { flatListData, emojiSections, selectedSkinTone, searchQuery, getModifiedEmoji, updateRecentEmojis } = useEmojiPicker({
     emojis: emojiData
   });
-  
-  // Build your own UI with complete control
-  return <YourCustomUI emojis={emojiSections} />;
+
+  const { renderItem, renderEmptyComponent } = useEmojiPickerRenderer({
+    onEmojiSelect: (emoji) => console.log(emoji),
+    getModifiedEmoji,
+    updateRecentEmojis,
+    selectedSkinTone,
+    emojiSections,
+    searchQuery,
+  });
+
+  // Bring your own scroll component
+  return (
+    <YourFlatList
+      data={flatListData}
+      renderItem={renderItem}
+      ListEmptyComponent={renderEmptyComponent}
+      keyExtractor={(item) => item.id}
+    />
+  );
+}
+
+function CustomPicker() {
+  return (
+    <EmojiPickerThemeProvider>
+      <CustomPickerContent />
+    </EmojiPickerThemeProvider>
+  );
 }
 ```
 
@@ -115,10 +155,9 @@ Mix and match these standalone components:
 
 ### 🎨 Headless Mode for Total Control
 Build completely custom interfaces:
-- `useEmojiPicker` - Get all the logic, build any UI you want
-- `emojiSections` - Organized emoji data by category
-- `recentEmojis` - Access recent emoji tracking
-- Complete control over layout and interactions
+- `useEmojiPicker` - All logic: search, filtering, recent emojis, skin tones, category ordering
+- `useEmojiPickerRenderer` - Ready-made `renderItem` and `renderEmptyComponent` for your own scroll component
+- Complete control over layout — works with `BottomSheetFlatList`, `FlashList`, or anything FlatList-compatible
 
 ### 🎭 Theme System
 - `EmojiPickerThemeProvider` - Wrap your app for consistent theming
@@ -154,3 +193,4 @@ Apache License 2.0
 - [GitHub](https://github.com/hirakudotai/react-native-emoji-picker)
 - [Issues](https://github.com/hirakudotai/react-native-emoji-picker/issues)
 - [NPM](https://www.npmjs.com/package/@hiraku-ai/react-native-emoji-picker)
+
