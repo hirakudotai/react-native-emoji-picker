@@ -13,6 +13,7 @@ import {
   HistoryIcon 
 } from '../../assets/icons';
 import { useEmojiPickerTheme } from '../../theme';
+import type { IconComponent } from './types';
 
 interface EmojiTabsProps {
   categories: string[];
@@ -23,6 +24,7 @@ interface EmojiTabsProps {
   tabStyle?: ViewStyle;
   activeTabStyle?: ViewStyle;
   FlatListComponent?: React.ElementType;
+  categoryIconComponents?: Record<string, IconComponent>;
 }
 
 // Default colors for category icons
@@ -48,6 +50,7 @@ export function EmojiTabs({
   tabStyle,
   activeTabStyle,
   FlatListComponent = FlatList,
+  categoryIconComponents,
 }: EmojiTabsProps) {
   const { theme } = useEmojiPickerTheme();
   
@@ -77,7 +80,13 @@ export function EmojiTabs({
   // Create dynamic category icons with custom colors
   const getCategoryIcon = useCallback((category: string) => {
     const color = getCategoryColor(category);
-    
+
+    // Use custom icon component if provided
+    if (categoryIconComponents?.[category]) {
+      const CustomIcon = categoryIconComponents[category];
+      return <CustomIcon size={ICON_SIZE} color={color} />;
+    }
+
     switch (category) {
       case 'Recently Used':
         return <HistoryIcon size={ICON_SIZE} color={color} />;
@@ -102,7 +111,7 @@ export function EmojiTabs({
       default:
         return <HashIcon size={ICON_SIZE} color={color} />;
     }
-  }, [getCategoryColor]);
+  }, [getCategoryColor, categoryIconComponents]);
 
   // Memoize style arrays
   const containerStyle = useMemo(() => [

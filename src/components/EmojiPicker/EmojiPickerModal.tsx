@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated, useWindowDimensions } from 'react-native';
 import { XIcon } from '../../assets/icons';
 import { EmojiPickerThemeProvider, useEmojiPickerTheme } from '../../theme';
@@ -63,6 +63,8 @@ function EmojiPickerInternal({
   updateCellsBatchingPeriod,
   windowSize,
   removeClippedSubviews,
+  // Icon overrides
+  icons,
   // Modal customization
   modalTitle = "Pick an emoji",
   modalStyle,
@@ -195,10 +197,10 @@ function EmojiPickerInternal({
               accessibilityLabel="Close emoji picker"
               accessibilityHint="Double tap to close the emoji picker modal"
             >
-              <XIcon 
-                size={CLOSE_ICON_SIZE} 
-                color={theme.colors.closeIcon} 
-              />
+              {(() => {
+                const CloseIcon = icons?.close ?? XIcon;
+                return <CloseIcon size={CLOSE_ICON_SIZE} color={theme.colors.closeIcon} />;
+              })()}
             </TouchableOpacity>
           </View>
           
@@ -237,6 +239,7 @@ function EmojiPickerInternal({
             searchPlaceholder={searchPlaceholder}
             tabIconColors={tabIconColors}
             darkMode={darkMode}
+            icons={icons}
             FlatListComponent={FlatListComponent}
             renderCustomTabs={renderCustomTabs}
             renderCustomSearch={renderCustomSearch}
