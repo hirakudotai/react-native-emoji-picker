@@ -59,6 +59,8 @@ function EmojiPickerInternal({
   // Theme
   darkMode = false,
   theme: customTheme,
+  // Icon overrides
+  icons,
   // Custom scroll components
   FlatListComponent = FlatList,
   TabFlatListComponent = FlatList,
@@ -291,7 +293,7 @@ function EmojiPickerInternal({
     }
     
     return (
-      <EmojiSearch 
+      <EmojiSearch
         onSearch={handleSearch}
         debounceMs={searchDebounceMs}
         minChars={searchMinChars}
@@ -299,6 +301,8 @@ function EmojiPickerInternal({
         searchBarStyle={searchBarStyle}
         searchInputStyle={searchInputStyle}
         showSearchIcon={showSearchIcon}
+        SearchIconComponent={icons?.search}
+        ClearIconComponent={icons?.clearSearch}
       />
     );
   };
@@ -331,15 +335,16 @@ function EmojiPickerInternal({
     }
     
     return (
-      <EmojiTabs 
-        categories={emojiSections.map(section => section.title)} 
-        activeCategory={activeCategory} 
+      <EmojiTabs
+        categories={emojiSections.map(section => section.title)}
+        activeCategory={activeCategory}
         onCategoryPress={handleCategoryPress}
         tabIconColors={tabIconColors}
         tabsContainerStyle={tabsContainerStyle}
         tabStyle={tabStyle}
         activeTabStyle={activeTabStyle}
         FlatListComponent={TabFlatListComponent}
+        categoryIconComponents={icons?.categories}
       />
     );
   };

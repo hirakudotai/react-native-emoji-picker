@@ -5,11 +5,13 @@ import { EmojiPickerModalProps } from './types';
 
 // Re-export types and constants
 export { SKIN_TONES, Category } from './constants';
-export type { 
-  FlatListItem, 
-  Section, 
+export type {
+  FlatListItem,
+  Section,
   EmojiPickerProps,
-  EmojiPickerModalProps
+  EmojiPickerModalProps,
+  IconComponent,
+  EmojiPickerIcons,
 } from './types';
 
 // Re-export components

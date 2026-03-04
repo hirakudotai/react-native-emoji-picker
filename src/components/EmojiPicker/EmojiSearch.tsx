@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react';
 import { StyleSheet, TextInput, View, TouchableOpacity, Platform, ViewStyle, TextStyle } from 'react-native';
-import { SearchIcon, XIcon } from '../../assets/icons';
+import { SearchIcon as DefaultSearchIcon, XIcon as DefaultXIcon } from '../../assets/icons';
 import { useEmojiPickerTheme } from '../../theme';
+import type { IconComponent } from './types';
 
 interface EmojiSearchProps {
   onSearch: (text: string) => void;
@@ -12,6 +13,8 @@ interface EmojiSearchProps {
   searchInputStyle?: TextStyle;
   showSearchIcon?: boolean;
   containerStyle?: ViewStyle;
+  SearchIconComponent?: IconComponent;
+  ClearIconComponent?: IconComponent;
 }
 
 function EmojiSearchInner({ 
@@ -23,6 +26,8 @@ function EmojiSearchInner({
   searchInputStyle,
   showSearchIcon = true,
   containerStyle,
+  SearchIconComponent,
+  ClearIconComponent,
 }: EmojiSearchProps) {
   const [inputValue, setInputValue] = useState('');
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -102,13 +107,16 @@ function EmojiSearchInner({
         },
         searchBarStyle
       ]}>
-        {showSearchIcon && (
-          <SearchIcon 
-            size={ICON_SIZE} 
-            color={themedColors.searchIcon} 
-            style={[styles.searchIcon, { marginRight: ICON_MARGIN }]} 
-          />
-        )}
+        {showSearchIcon && (() => {
+          const SearchIcon = SearchIconComponent ?? DefaultSearchIcon;
+          return (
+            <SearchIcon
+              size={ICON_SIZE}
+              color={themedColors.searchIcon}
+              style={[styles.searchIcon, { marginRight: ICON_MARGIN }]}
+            />
+          );
+        })()}
         
         <TextInput
           style={[
@@ -139,7 +147,10 @@ function EmojiSearchInner({
             accessibilityLabel="Clear search"
             accessibilityHint="Double tap to clear the search field"
           >
-            <XIcon size={CLEAR_ICON_SIZE} color={themedColors.clearIcon} />
+            {(() => {
+              const ClearIcon = ClearIconComponent ?? DefaultXIcon;
+              return <ClearIcon size={CLEAR_ICON_SIZE} color={themedColors.clearIcon} />;
+            })()}
           </TouchableOpacity>
         )}
       </View>
