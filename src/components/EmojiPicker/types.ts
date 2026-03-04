@@ -13,6 +13,15 @@ export interface Section {
   data: EmojiData[];
 }
 
+export type IconComponent = React.ComponentType<{ size?: number; color?: string; style?: any }>;
+
+export interface EmojiPickerIcons {
+  close?: IconComponent;
+  search?: IconComponent;
+  clearSearch?: IconComponent;
+  categories?: Record<string, IconComponent>;
+}
+
 export interface EmojiPickerProps {
   // Core functionality
   onEmojiSelect: (emoji: string) => void;
@@ -67,7 +76,10 @@ export interface EmojiPickerProps {
   // Theme
   darkMode?: boolean;
   theme?: PartialTheme;
-  
+
+  // Icon overrides
+  icons?: EmojiPickerIcons;
+
   // Custom scroll components (e.g. BottomSheetFlatList for gesture handler compatibility)
   FlatListComponent?: React.ElementType;
   TabFlatListComponent?: React.ElementType;

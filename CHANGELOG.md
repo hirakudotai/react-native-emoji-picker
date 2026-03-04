@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.4] - 2026-03-04
+
+### Added
+- Added support for customizing icons (X, search and emoji categories) - Contributed by @bhamiltoncx
+
 ## [1.2.3] - 2026-02-25
 
 ### Added
