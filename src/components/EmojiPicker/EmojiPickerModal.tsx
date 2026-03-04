@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Modal, TouchableOpacity, Text, StyleSheet, Animated, useWindowDimensions } from 'react-native';
 import { XIcon } from '../../assets/icons';
 import { EmojiPickerThemeProvider, useEmojiPickerTheme } from '../../theme';
