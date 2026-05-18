@@ -55,7 +55,7 @@ function EmojiSearchInner({
     text: theme.colors.text,
   }), [theme]);
 
-  const handleChange = (text: string) => {
+  const handleChange = useCallback((text: string) => {
     // Update local input immediately
     setInputValue(text);
     
@@ -68,15 +68,15 @@ function EmojiSearchInner({
     timeoutRef.current = setTimeout(() => {
       onSearch(text.length >= minChars ? text : '');
     }, debounceMs);
-  };
+  }, [debounceMs, minChars, onSearch]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setInputValue('');
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     onSearch('');
-  };
+  }, [onSearch]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -158,7 +158,7 @@ function EmojiSearchInner({
   );
 }
 
-export const EmojiSearch = EmojiSearchInner;
+export const EmojiSearch = React.memo(EmojiSearchInner);
 
 const styles = StyleSheet.create({
   container: {
@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
     // All styling now via props and theme
     ...Platform.select({
       web: {
-        outlineStyle: 'none',
+        outlineStyle: 'solid',
+        outlineWidth: 0,
       },
     }),
   },

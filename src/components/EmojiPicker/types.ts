@@ -104,12 +104,9 @@ export interface EmojiPickerProps {
     displayName: string;
   }) => React.ReactNode;
   
-  // FlatList performance
+  // FlashList performance
   initialNumToRender?: number;
   maxToRenderPerBatch?: number;
-  updateCellsBatchingPeriod?: number;
-  windowSize?: number;
-  removeClippedSubviews?: boolean;
 }
 
 export interface EmojiPickerModalProps extends Omit<EmojiPickerProps, 'onClose'> {

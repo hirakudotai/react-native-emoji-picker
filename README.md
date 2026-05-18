@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hirakudotai/react-native-emoji-picker/main/images/hiraku-react-native-emoji-picker.jpg" alt="React Native Emoji Picker" width="600" />
+  <img src="https://raw.githubusercontent.com/betweenus-co/react-native-emoji-picker/main/images/hiraku-react-native-emoji-picker.jpg" alt="React Native Emoji Picker" width="600" />
 </p>
 
 A powerful, flexible emoji picker for React Native with modal and inline modes, extensive customization, and cross-platform support.
@@ -39,11 +39,38 @@ Try out the interactive demo with customization options: **[react-native-emoji-p
 npm install @hiraku-ai/react-native-emoji-picker
 ```
 
+### Install from GitHub Release
+
+Once a version tag is pushed, GitHub Actions builds the package and publishes a release tarball that can be installed directly with npm:
+
+```bash
+npm install https://github.com/betweenus-co/react-native-emoji-picker/releases/download/v<version>/hiraku-ai-react-native-emoji-picker-<version>.tgz
+```
+
+Example:
+
+```bash
+npm install https://github.com/betweenus-co/react-native-emoji-picker/releases/download/v1.2.5/hiraku-ai-react-native-emoji-picker-1.2.5.tgz
+```
+
+### Release flow
+
+Push a matching version tag and GitHub Actions will build the package and upload the tarball to the GitHub Release automatically:
+
+```bash
+git push origin main
+git push origin v1.2.5
+```
+
 ### Peer Dependencies
 
 ```bash
-npm install @react-native-async-storage/async-storage react-native-svg
+npm install react-native-mmkv react-native-svg @shopify/flash-list
 ```
+
+> Note: `react-native-mmkv` requires additional native setup. See [MMKV documentation](https://github.com/mrousos/react-native-mmkv#readme) for installation details.
+
+> Note: For optimal performance, `flash-list` is used instead of FlatList. See [FlashList documentation](https://shopify.github.io/flash-list/) for installation details.
 
 ## 🚀 Quick Start
 
@@ -190,7 +217,6 @@ Apache License 2.0
 
 ## 🔗 Links
 
-- [GitHub](https://github.com/hirakudotai/react-native-emoji-picker)
-- [Issues](https://github.com/hirakudotai/react-native-emoji-picker/issues)
+- [GitHub](https://github.com/betweenus-co/react-native-emoji-picker)
+- [Issues](https://github.com/betweenus-co/react-native-emoji-picker/issues)
 - [NPM](https://www.npmjs.com/package/@hiraku-ai/react-native-emoji-picker)
-

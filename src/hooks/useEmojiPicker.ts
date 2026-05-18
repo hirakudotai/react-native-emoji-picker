@@ -1,7 +1,9 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createMMKV } from 'react-native-mmkv';
 import { EmojiData } from '../types/emoji';
 import { groupEmojisByCategory, searchEmojis } from '../utils/emojiUtils';
+
+const storage = createMMKV();
 
 const STORAGE_KEY = 'emoji_picker_recent_emojis';
 
@@ -32,7 +34,7 @@ export function useEmojiPicker({
     const loadRecentEmojis = async () => {
       if (!showHistoryTab) return;
       try {
-        const recentEmojisJson = await AsyncStorage.getItem(STORAGE_KEY);
+        const recentEmojisJson = storage.getString(STORAGE_KEY);
         if (recentEmojisJson) {
           const parsed = JSON.parse(recentEmojisJson);
           setRecentEmojis(parsed.slice(0, maxRecentEmojis));
@@ -135,7 +137,7 @@ export function useEmojiPicker({
         
         const saveRecentEmojis = async (data: EmojiData[]) => {
           try {
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            storage.set(STORAGE_KEY, JSON.stringify(data));
           } catch (error) {
             console.error('Failed to save recent emojis:', error);
           }

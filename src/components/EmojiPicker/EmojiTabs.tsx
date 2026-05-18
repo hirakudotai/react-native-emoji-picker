@@ -41,7 +41,7 @@ const DEFAULT_ICON_COLORS: Record<string, string> = {
   'Flags': '#0ea5e9',
 };
 
-export function EmojiTabs({ 
+function EmojiTabsInner({ 
   categories, 
   activeCategory, 
   onCategoryPress, 
@@ -191,6 +191,8 @@ export function EmojiTabs({
     </View>
   );
 }
+
+export const EmojiTabs = React.memo(EmojiTabsInner);
 
 const styles = StyleSheet.create({
   container: {

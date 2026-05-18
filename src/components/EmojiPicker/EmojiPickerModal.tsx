@@ -52,6 +52,7 @@ function EmojiPickerInternal({
   // Theme
   darkMode = false,
   FlatListComponent,
+  TabFlatListComponent,
   // Custom renders
   renderCustomTabs,
   renderCustomSearch,
@@ -60,9 +61,6 @@ function EmojiPickerInternal({
   // FlatList performance
   initialNumToRender,
   maxToRenderPerBatch,
-  updateCellsBatchingPeriod,
-  windowSize,
-  removeClippedSubviews,
   // Icon overrides
   icons,
   // Modal customization
@@ -241,15 +239,13 @@ function EmojiPickerInternal({
             darkMode={darkMode}
             icons={icons}
             FlatListComponent={FlatListComponent}
+            TabFlatListComponent={TabFlatListComponent}
             renderCustomTabs={renderCustomTabs}
             renderCustomSearch={renderCustomSearch}
             renderCustomSkinToneSelector={renderCustomSkinToneSelector}
             renderCategoryHeader={renderCategoryHeader}
             initialNumToRender={initialNumToRender}
             maxToRenderPerBatch={maxToRenderPerBatch}
-            updateCellsBatchingPeriod={updateCellsBatchingPeriod}
-            windowSize={windowSize}
-            removeClippedSubviews={removeClippedSubviews}
           />
         </Animated.View>
       </View>

@@ -16,13 +16,13 @@ interface SkinToneSelectorProps {
   }) => React.ReactNode;
 }
 
-export const SkinToneSelector: React.FC<SkinToneSelectorProps> = ({
+function SkinToneSelectorInner({
   selectedSkinTone,
   onSkinToneChange,
   skinToneSelectorStyle,
   skinToneButtonStyle,
   renderCustomSkinToneSelector,
-}) => {
+}: SkinToneSelectorProps) {
   const { theme } = useEmojiPickerTheme();
   
   // Default layout values
@@ -78,4 +78,6 @@ export const SkinToneSelector: React.FC<SkinToneSelectorProps> = ({
       })}
     </View>
   );
-};
+}
+
+export const SkinToneSelector = React.memo(SkinToneSelectorInner);

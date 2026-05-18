@@ -1,5 +1,7 @@
 import { EmojiData } from '../types/emoji';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createMMKV } from 'react-native-mmkv';
+
+const storage = createMMKV();
 
 // Standard category order
 const EMOJI_CATEGORIES_ORDER = [
@@ -74,7 +76,7 @@ const MAX_RECENT_EMOJIS = 30;
 
 export const getRecentlyUsedEmojis = async (): Promise<string[]> => {
   try {
-    const stored = await AsyncStorage.getItem(RECENT_EMOJIS_KEY);
+    const stored = storage.getString(RECENT_EMOJIS_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch (e) {
     console.error('Failed to load recent emojis:', e);
@@ -94,7 +96,7 @@ export const saveRecentlyUsedEmoji = async (emoji: string): Promise<void> => {
     const updated = [emoji, ...filtered].slice(0, MAX_RECENT_EMOJIS);
     
     // Save to storage
-    await AsyncStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(updated));
+    storage.set(RECENT_EMOJIS_KEY, JSON.stringify(updated));
   } catch (e) {
     console.error('Failed to save recent emoji:', e);
   }
